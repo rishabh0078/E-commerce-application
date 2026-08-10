@@ -40,6 +40,7 @@ const ShopContextProvider = (props) => {
             cartData[itemId][size] = 1;
         }
         setCartItems(cartData);
+        toast.success('Added to Cart!');
 
         if (token) {
             try {
@@ -110,14 +111,23 @@ const ShopContextProvider = (props) => {
 
     const getProductsData = async () => {
         try {
-
             const response = await axios.get(backendUrl + '/api/product/list')
             if (response.data.success) {
-                setProducts(response.data.products.reverse())
+                const rawProducts = response.data.products.reverse();
+                let bestsellerCount = 0;
+                const formattedProducts = rawProducts.map((p) => {
+                    if (p.bestseller) {
+                        bestsellerCount++;
+                        if (bestsellerCount > 4) {
+                            return { ...p, bestseller: false };
+                        }
+                    }
+                    return p;
+                });
+                setProducts(formattedProducts);
             } else {
                 toast.error(response.data.message)
             }
-
         } catch (error) {
             console.log(error)
             toast.error(error.message)

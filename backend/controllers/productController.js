@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary"
 import productModel from "../models/productModel.js"
+import aiRagEngine from "../services/aiRagEngine.js"
 
 // function for add product
 const addProduct = async (req, res) => {
@@ -38,6 +39,9 @@ const addProduct = async (req, res) => {
         const product = new productModel(productData);
         await product.save()
 
+        // Ultra-fast targeted single-product vector upsert to Pinecone
+        aiRagEngine.upsertSingleProduct(product).catch(err => console.error("Single Pinecone upsert error:", err.message))
+
         res.json({ success: true, message: "Product Added" })
 
     } catch (error) {
@@ -64,6 +68,10 @@ const removeProduct = async (req, res) => {
     try {
         
         await productModel.findByIdAndDelete(req.body.id)
+
+        // Delete single vector from Pinecone
+        aiRagEngine.deleteSingleProduct(req.body.id).catch(err => console.error("Single Pinecone delete error:", err.message))
+
         res.json({success:true,message:"Product Removed"})
 
     } catch (error) {

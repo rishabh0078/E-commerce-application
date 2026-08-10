@@ -4,32 +4,36 @@ import Title from './Title';
 import ProductItem from './ProductItem';
 
 const LatestCollection = () => {
+  const { products } = useContext(ShopContext);
+  const [latestProducts, setLatestProducts] = useState([]);
 
-    const { products } = useContext(ShopContext);
-    const [latestProducts,setLatestProducts] = useState([]);
-
-    useEffect(()=>{
-        setLatestProducts(products.slice(0,10));
-    },[products])
+  useEffect(() => {
+    setLatestProducts(products.slice(0, 10));
+  }, [products])
 
   return (
-    <div className='my-10'>
-      <div className='text-center py-8 text-3xl'>
-          <Title text1={'LATEST'} text2={'COLLECTIONS'} />
-          <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>
-          Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the.
-          </p>
+    <section className='my-16'>
+      <div className='flex flex-col items-center text-center mb-10'>
+        <Title text1={'LATEST'} text2={'COLLECTION'} />
+        <p className='max-w-xl text-sm sm:text-base text-gray-500 font-normal leading-relaxed'>
+          Explore our newest seasonal drops crafted with precision tailoring, premium fabrics, and modern silhouettes.
+        </p>
       </div>
 
-      {/* Rendering Products */}
-      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6'>
-        {
-          latestProducts.map((item,index)=>(
-            <ProductItem key={index} id={item._id} image={item.image} name={item.name} price={item.price} />
-          ))
-        }
+      {/* Grid Rendering */}
+      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6'>
+        {latestProducts.map((item) => (
+          <ProductItem 
+            key={item._id} 
+            id={item._id} 
+            image={item.image} 
+            name={item.name} 
+            price={item.price} 
+            bestseller={item.bestseller}
+          />
+        ))}
       </div>
-    </div>
+    </section>
   )
 }
 

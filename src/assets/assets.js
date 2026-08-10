@@ -58,6 +58,7 @@ import p_img52 from './p_img52.png'
 import logo from './logo.png'
 import hero_img from './hero_img.png'
 import hero_img1 from './hero_img1.jpg'
+import mens_fashion_hero from './mens_fashion_hero.png'
 import cart_icon from './cart_icon.png'
 import bin_icon from './bin_icon.png'
 import dropdown_icon from './dropdown_icon.png'
@@ -79,6 +80,7 @@ export const assets = {
     logo,
     hero_img,
     hero_img1,
+    mens_fashion_hero,
     cart_icon,
     dropdown_icon,
     exchange_icon,
@@ -108,7 +110,7 @@ export const products = [
         subCategory: "Topwear",
         sizes: ["S", "M", "L"],
         date: 1716634345448,
-        bestseller: true
+        bestseller: false
     },
     {
         _id: "aaaab",
@@ -132,7 +134,7 @@ export const products = [
         subCategory: "Topwear",
         sizes: ["S", "L", "XL"],
         date: 1716234545448,
-        bestseller: true
+        bestseller: false
     },
     {
         _id: "aaaad",
@@ -156,7 +158,7 @@ export const products = [
         subCategory: "Topwear",
         sizes: ["M", "L", "XL"],
         date: 1716622345448,
-        bestseller: true
+        bestseller: false
     },
     {
         _id: "aaaaf",
@@ -168,7 +170,7 @@ export const products = [
         subCategory: "Topwear",
         sizes: ["S", "L", "XL"],
         date: 1716623423448,
-        bestseller: true
+        bestseller: false
     },
     {
         _id: "aaaag",

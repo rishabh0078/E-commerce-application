@@ -1,4 +1,4 @@
-# Forever - Full-Stack E-Commerce application
+# AURA - AI-Powered E-commerce Platform
 
 A complete, production-ready e-commerce web app built with React on the frontend and Node.js/Express on the backend. Browse products, manage a cart, and check out with Stripe, Razorpay, or cash on delivery — all backed by MongoDB and Cloudinary for image storage.
 
@@ -38,8 +38,8 @@ A complete, production-ready e-commerce web app built with React on the frontend
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/rishabh0078/Ecommerce-Platform.git
-cd Ecommerce-Platform
+git clone https://github.com/rishabh0078/AI-integrated-ecommerce-platform.git
+cd AI-integrated-ecommerce-platform
 ```
 
 ### 2. Set up environment variables

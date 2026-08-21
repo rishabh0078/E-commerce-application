@@ -305,28 +305,33 @@ class AiRagEngine {
 
       const contextText = retrievedDocs.map((d) => d.text).join("\n\n---\n\n");
 
-      // Extract recommended products for UI rendering
+      // Extract recommended products for UI rendering only when query is shopping/product related
+      const productIntentRegex = /(product|cloth|shirt|pant|trouser|jacket|hoodie|t-shirt|topwear|bottomwear|winterwear|wear|recommend|suggest|buy|price|cost|collection|catalog|bestseller|size|men|item|looking for|show me|find me)/i;
+      const isProductQuery = productIntentRegex.test(userMessage);
+
       const productDocs = retrievedDocs.filter((d) => d.metadata.type === "product");
-      const recommendedProducts = productDocs.map((d) => ({
-        _id: d.metadata.productId,
-        name: d.metadata.name,
-        price: d.metadata.price,
-        category: d.metadata.category,
-        subCategory: d.metadata.subCategory,
-        image: Array.isArray(d.metadata.image) ? d.metadata.image : [d.metadata.image],
-        sizes: d.metadata.sizes,
-        bestseller: d.metadata.bestseller
-      }));
+      const recommendedProducts = isProductQuery
+        ? productDocs.slice(0, 3).map((d) => ({
+            _id: d.metadata.productId,
+            name: d.metadata.name,
+            price: d.metadata.price,
+            category: d.metadata.category,
+            subCategory: d.metadata.subCategory,
+            image: Array.isArray(d.metadata.image) ? d.metadata.image : [d.metadata.image],
+            sizes: d.metadata.sizes,
+            bestseller: d.metadata.bestseller
+          }))
+        : [];
 
       // 2. Initialize Groq LLM via LangChain if key exists
       const groqKey = process.env.GROQ_API_KEY ? process.env.GROQ_API_KEY.trim() : "";
 
       if (groqKey && groqKey !== "your_groq_api_key") {
         const candidateModels = [
-          "llama-3.3-70b-versatile",
-          "llama-3.1-70b-versatile",
-          "llama-3.1-8b-instant",
-          "mixtral-8x7b-32768"
+          "openai/gpt-oss-120b",
+          "openai/gpt-oss-20b",
+          "qwen/qwen3.6-27b",
+          "groq/compound"
         ];
 
         for (const modelName of candidateModels) {
@@ -340,10 +345,10 @@ class AiRagEngine {
             });
 
             const systemPrompt = PromptTemplate.fromTemplate(
-              `You are Smarty AI, the official AI Shopping Assistant for 'AURA', an elite luxury menswear brand.
-Your primary goal is to help shoppers find the perfect products, answer questions about shipping/returns/payments, and provide friendly, concise recommendations.
+              `You are Smarty AI, the official AI Shopping Assistant and personal stylist for 'AURA', an elite luxury menswear and apparel brand.
+Your personality is friendly, warm, polite, and helpful.
 
-RELEVANT STORE & PRODUCT CONTEXT:
+RELEVANT STORE & CATALOG CONTEXT:
 --------------------------------
 {context}
 --------------------------------
@@ -351,15 +356,15 @@ RELEVANT STORE & PRODUCT CONTEXT:
 CONVERSATION HISTORY:
 {history}
 
-USER QUESTION: {question}
+USER MESSAGE: {question}
 
-INSTRUCTIONS:
-1. Answer clearly, accurately, and politely based strictly on the provided context.
-2. If suggesting products, mention their key features, price ($), and sizes available.
-3. If asked about shipping, returns, or payment options, summarize store policies accurately.
-4. Keep formatting clean with standard bullet points and markdown.
+GUIDELINES:
+1. If the user greets you or makes small talk (e.g. "hi", "what are you doing", "who are you", "how are you"), respond warmly and naturally in character, and politely offer to help them find outfits or answer questions.
+2. If the user asks about products, recommendations, or style suggestions, recommend relevant items from the catalog context, mentioning price ($), category, and available sizes.
+3. If the user asks about shipping, returns, delivery time, or payment options, explain the store policy accurately.
+4. Keep answers clean, stylish, concise, and formatted with markdown bullet points when helpful.
 
-ANSWER:`
+RESPONSE:`
             );
 
             const historyString = conversationHistory
@@ -407,8 +412,20 @@ ANSWER:`
   _generateSmartFallback(query, docs) {
     const qLower = query.toLowerCase();
 
+    if (
+      qLower.includes("hi") ||
+      qLower.includes("hello") ||
+      qLower.includes("hey") ||
+      qLower.includes("what r u doing") ||
+      qLower.includes("what are you doing") ||
+      qLower.includes("who are you") ||
+      qLower.includes("how are you")
+    ) {
+      return "👋 Hi there! I'm **Smarty AI**, your personal shopping assistant for **AURA**.\n\nI'm ready to help you browse our premium collections, find the perfect size, check prices, or answer any questions about our return policy and shipping fees. What can I help you find today?";
+    }
+
     if (qLower.includes("return") || qLower.includes("refund") || qLower.includes("exchange")) {
-      return "📦 **Return & Refund Policy**:\nWe offer a **7-day easy return & exchange policy**! Items should be unused with original tags. Refunds are processed within 5-7 business days back to your original payment method or store credit.";
+      return "📦 **Return & Refund Policy**:\nWe offer a **7-day easy return & exchange policy**! Items should be unused with original tags intact. Refunds are processed within 5-7 business days back to your original payment method or store credit.";
     }
 
     if (qLower.includes("shipping") || qLower.includes("delivery") || qLower.includes("fee")) {
